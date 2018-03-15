@@ -1,18 +1,30 @@
-package net.lxndrsdrnk.flickrgallery;
+package net.lxndrsdrnk.flickrgallery.list;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import net.lxndrsdrnk.flickrgallery.FGApplication;
+import net.lxndrsdrnk.flickrgallery.R;
+import net.lxndrsdrnk.flickrgallery.api.FlickrAPI;
+import net.lxndrsdrnk.flickrgallery.api.FlickrResponse;
 import net.lxndrsdrnk.flickrgallery.api.Photo;
 
 import java.util.ArrayList;
+
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A fragment representing a list of Flickr Photos.
@@ -27,6 +39,13 @@ public class PhotosFragment extends Fragment {
     private int mColumnCount = 3;
     private OnListFragmentInteractionListener mListener;
 
+    @BindView(R.id.photosList)
+    RecyclerView mPhotosRecyclerView;
+    InfinitePhotoRecyclerViewAdapter mPhotosAdapter;
+
+
+    @Inject
+    FlickrAPI flickrAPI;
 
     public PhotosFragment() {
     }
@@ -43,6 +62,8 @@ public class PhotosFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ((FGApplication) getActivity().getApplication()).component().inject(this);
+
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -53,18 +74,43 @@ public class PhotosFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_photo_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        ButterKnife.bind(this, view);
+
+        mPhotosAdapter = new InfinitePhotoRecyclerViewAdapter(new ArrayList<Photo>(), mListener);
+
+        GridLayoutManager layoutManager = new CustomGridLayoutManager(view.getContext(), mColumnCount);
+        mPhotosRecyclerView.setLayoutManager(layoutManager);
+        mPhotosRecyclerView.setAdapter(mPhotosAdapter);
+        mPhotosRecyclerView.addOnScrollListener(new InfiniteRecyclerViewScrollListener(layoutManager){
+
+            @Override
+            void requestData(int pageNum, int pageSize) {
+                Log.d("SCROLL", "Request pageNum="+pageNum+" pageSize="+pageSize);
+                loadData(pageNum, pageSize);
             }
-            recyclerView.setAdapter(new MyPhotoRecyclerViewAdapter(new ArrayList<Photo>(), mListener));
-        }
+        });
+
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadData(1, 50);
+    }
+
+    protected void loadData(int pageNum, int pageSize){
+        flickrAPI.getRecent(pageNum, pageSize).enqueue(new Callback<FlickrResponse>() {
+            @Override
+            public void onResponse(Call<FlickrResponse> call, Response<FlickrResponse> response) {
+                mPhotosAdapter.appendValues(response.body().photos.photo);
+            }
+
+            @Override
+            public void onFailure(Call<FlickrResponse> call, Throwable t) {
+
+            }
+        });
     }
 
 

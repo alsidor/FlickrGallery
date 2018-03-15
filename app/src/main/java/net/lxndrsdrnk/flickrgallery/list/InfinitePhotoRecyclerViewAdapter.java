@@ -1,4 +1,4 @@
-package net.lxndrsdrnk.flickrgallery;
+package net.lxndrsdrnk.flickrgallery.list;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,19 +9,19 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import net.lxndrsdrnk.flickrgallery.PhotosFragment.OnListFragmentInteractionListener;
+import net.lxndrsdrnk.flickrgallery.R;
 import net.lxndrsdrnk.flickrgallery.api.Photo;
 
 import java.util.List;
 
 
 
-public class MyPhotoRecyclerViewAdapter extends RecyclerView.Adapter<MyPhotoRecyclerViewAdapter.ViewHolder> {
+public class InfinitePhotoRecyclerViewAdapter extends RecyclerView.Adapter<InfinitePhotoRecyclerViewAdapter.ViewHolder> {
 
     private final List<Photo> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final PhotosFragment.OnListFragmentInteractionListener mListener;
 
-    public MyPhotoRecyclerViewAdapter(List<Photo> items, OnListFragmentInteractionListener listener) {
+    public InfinitePhotoRecyclerViewAdapter(List<Photo> items, PhotosFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -37,10 +37,10 @@ public class MyPhotoRecyclerViewAdapter extends RecyclerView.Adapter<MyPhotoRecy
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mPhoto = mValues.get(position);
 
-//        Picasso.get().load(holder.mPhoto.)
+        Picasso.get().load(holder.mPhoto.url_s)
 //                .error(R.drawable.placeholder)
 //                .placeholder(R.drawable.placeholder)
-//                .into(feedListRowHolder.thumbnail);
+                .into(holder.mPhotoImageView);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +52,12 @@ public class MyPhotoRecyclerViewAdapter extends RecyclerView.Adapter<MyPhotoRecy
                 }
             }
         });
+    }
+
+    public void appendValues(List<Photo> newValues){
+        int positionStart = mValues.size();
+        mValues.addAll(newValues);
+        notifyItemRangeChanged(positionStart, newValues.size());
     }
 
     @Override

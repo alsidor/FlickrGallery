@@ -2,6 +2,7 @@ package net.lxndrsdrnk.flickrgallery.di;
 
 import net.lxndrsdrnk.flickrgallery.FGApplication;
 import net.lxndrsdrnk.flickrgallery.MainActivity;
+import net.lxndrsdrnk.flickrgallery.list.PhotosFragment;
 
 import javax.inject.Singleton;
 
@@ -19,6 +20,7 @@ import dagger.Component;
 })
 public interface ApplicationComponent {
     void inject(FGApplication application);
-    void inject(MainActivity application);
+    void inject(MainActivity activity);
+    void inject(PhotosFragment fragment);
 }
 

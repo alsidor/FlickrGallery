@@ -10,12 +10,12 @@ public class FlickrResponse {
 
     public static class Photos {
 
-        Integer page;
-        Integer pages;
-        Integer perpage;
-        Integer total;
+        public Integer page;
+        public Integer pages;
+        public Integer perpage;
+        public Integer total;
 
-        List<Photo> photo;
+        public List<Photo> photo;
 
     }
 
