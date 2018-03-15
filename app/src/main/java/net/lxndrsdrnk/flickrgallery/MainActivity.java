@@ -1,5 +1,6 @@
 package net.lxndrsdrnk.flickrgallery;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, PhotosFragment.OnListFragmentInteractionListener {
 
     public static final String LIST_FRAGMENT_TAG = "LIST_FRAGMENT_TAG";
+    public static final String EXTRA_REFRESH_DATA = "EXTRA_REFRESH_DATA";
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -38,21 +40,27 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         if(null == savedInstanceState) {
 
+            final String searchValue = sharedPreferences.getString(SettingsKeys.CURRENT_SEARCH_VALUE, null);
+
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.container, PhotosFragment.newInstance(3), LIST_FRAGMENT_TAG)
+                    .add(R.id.container, PhotosFragment.newInstance(searchValue), LIST_FRAGMENT_TAG)
                     .commit();
 
         }
 
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(getIntent().hasExtra(MainActivity.EXTRA_REFRESH_DATA)){
+            refreshPhotosFragment();
+        }
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        final String searchValue = sharedPreferences.getString(SettingsKeys.CURRENT_SEARCH_VALUE, null);
-        setSearchValueToFragments(searchValue);
     }
 
     @Override
@@ -80,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             searchView.setIconified(false);
             searchView.setQuery(searchValue, false);
             searchView.clearFocus();
+        }else{
+            searchView.setIconified(true);
+            searchView.setQuery(null, false);
         }
 
         final boolean isPollingEnabled = pollingHelper.isPollingEnabled();
@@ -108,8 +119,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
-    public void onListFragmentInteraction(Photo photo) {
-
+    public void onPhotoSelected(Photo photo) {
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.container, PhotoInfoFragment.newInstance(photo.getPhotoPageUrl()))
+                .addToBackStack(null)
+                .commit();
     }
 
     public void onClearSearch(){
@@ -140,6 +154,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         PhotosFragment photosFragment = (PhotosFragment) getSupportFragmentManager().findFragmentByTag(LIST_FRAGMENT_TAG);
         if( photosFragment != null ){
             photosFragment.setSearchValue(searchValue);
+        }
+    }
+
+    public void refreshPhotosFragment(){
+        PhotosFragment photosFragment = (PhotosFragment) getSupportFragmentManager().findFragmentByTag(LIST_FRAGMENT_TAG);
+        if( photosFragment != null ){
+            photosFragment.refresh();
         }
     }
 

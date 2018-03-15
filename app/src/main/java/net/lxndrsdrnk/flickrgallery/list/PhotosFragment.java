@@ -1,6 +1,7 @@
 package net.lxndrsdrnk.flickrgallery.list;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 
 import net.lxndrsdrnk.flickrgallery.FGApplication;
 import net.lxndrsdrnk.flickrgallery.R;
+import net.lxndrsdrnk.flickrgallery.SettingsKeys;
 import net.lxndrsdrnk.flickrgallery.api.FlickrAPI;
 import net.lxndrsdrnk.flickrgallery.api.FlickrResponse;
 import net.lxndrsdrnk.flickrgallery.api.Photo;
@@ -35,9 +37,12 @@ import retrofit2.Response;
  */
 public class PhotosFragment extends Fragment {
 
-    private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_SEARCH_VALUE = "search_value";
 
     private int mColumnCount = 3;
+    private int mPageSize = 50;
+
+
     private OnListFragmentInteractionListener mListener;
 
     private String mSearchValue;
@@ -51,13 +56,16 @@ public class PhotosFragment extends Fragment {
     @Inject
     FlickrAPI flickrAPI;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     public PhotosFragment() {
     }
 
-    public static PhotosFragment newInstance(int columnCount) {
+    public static PhotosFragment newInstance(String searchValue) {
         PhotosFragment fragment = new PhotosFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putString(ARG_SEARCH_VALUE, searchValue);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,7 +77,7 @@ public class PhotosFragment extends Fragment {
         ((FGApplication) getActivity().getApplication()).component().inject(this);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            mSearchValue = getArguments().getString(ARG_SEARCH_VALUE);
         }
     }
 
@@ -87,11 +95,10 @@ public class PhotosFragment extends Fragment {
         mPhotosRecyclerView.setLayoutManager(layoutManager);
         mPhotosRecyclerView.setAdapter(mPhotosAdapter);
 
-        mInfinteScrollAdapter = new InfiniteRecyclerViewScrollListener(layoutManager){
+        mInfinteScrollAdapter = new InfiniteRecyclerViewScrollListener(layoutManager, mPageSize){
 
             @Override
             void requestData(int pageNum, int pageSize) {
-                Log.d("SCROLL", "Request pageNum="+pageNum+" pageSize="+pageSize);
                 loadData(pageNum, pageSize);
             }
         };
@@ -104,24 +111,37 @@ public class PhotosFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        loadData(1, 50);
+        loadData(1, mPageSize);
     }
 
     public void setSearchValue(String searchValue){
         this.mSearchValue = searchValue;
+        getArguments().putString(ARG_SEARCH_VALUE, mSearchValue);
 
         mPhotosAdapter.reset();
 
-        loadData(1, 50);
+        loadData(1, mPageSize);
     }
 
-    protected void loadData(int pageNum, int pageSize){
+    public void refresh() {
+        mPhotosAdapter.reset();
+
+        loadData(1, mPageSize);
+    }
+
+
+    protected void loadData(final int pageNum, int pageSize){
 
         final Callback<FlickrResponse> callback = new Callback<FlickrResponse>() {
             @Override
             public void onResponse(Call<FlickrResponse> call, Response<FlickrResponse> response) {
-                mPhotosAdapter.appendValues(response.body().photos.photo);
+                FlickrResponse flickrResponse = response.body();
+                mPhotosAdapter.appendValues(flickrResponse.photos.photo);
                 mInfinteScrollAdapter.notifyDataLoaded();
+
+                if(pageNum == 1 && !TextUtils.isEmpty(mSearchValue) && !flickrResponse.photos.photo.isEmpty()){
+                    sharedPreferences.edit().putString(SettingsKeys.LAST_PHOTO_ID, flickrResponse.photos.photo.get(0).id).commit();
+                }
             }
 
             @Override
@@ -158,6 +178,6 @@ public class PhotosFragment extends Fragment {
 
 
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Photo photo);
+        void onPhotoSelected(Photo photo);
     }
 }

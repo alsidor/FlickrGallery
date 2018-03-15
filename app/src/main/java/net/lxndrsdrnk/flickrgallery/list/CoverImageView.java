@@ -44,20 +44,24 @@ public class CoverImageView extends SquareImageView {
             // Compute the scale to choose (this works)
             float scaleX = (float) displayWidth / (float) imageWidth;
             float scaleY = (float) displayHeight / (float) imageHeight;
-            float minScale = Math.min(scaleX, scaleY);
+
+            float scale;
+            if(scaleX < 1 || scaleY < 1){
+                scale = Math.min(scaleX, scaleY);
+            }else{
+                scale = Math.max(scaleX, scaleY);
+            }
 
             // tx, ty should be the translation to take the image back to the screen center
-            float tx = Math.max(0,
-                    0.5f * ((float) displayWidth - (minScale * imageWidth)));
-            float ty = Math.max(0,
-                    0.5f * ((float) displayHeight - (minScale * imageHeight)));
+            float tx = 0.5f * ((float) displayWidth - (scale * imageWidth));
+            float ty = 0.5f * ((float) displayHeight - (scale * imageHeight));
 
             // Compute the matrix
             Matrix m = new Matrix();
             m.reset();
 
             // Middle of the image should be the scale pivot
-            m.postScale(minScale, minScale, imageWidth / 2f, imageHeight / 2f);
+            m.postScale(scale, scale, imageWidth / 2f, imageHeight / 2f);
 
             // Translate
             m.postTranslate(tx, ty);

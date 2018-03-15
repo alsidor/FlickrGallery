@@ -1,14 +1,11 @@
 package net.lxndrsdrnk.flickrgallery.list;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import net.lxndrsdrnk.flickrgallery.R;
@@ -50,7 +47,7 @@ public class InfinitePhotoRecyclerViewAdapter extends RecyclerView.Adapter<Infin
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mPhoto);
+                    mListener.onPhotoSelected(holder.mPhoto);
                 }
             }
         });
@@ -74,7 +71,6 @@ public class InfinitePhotoRecyclerViewAdapter extends RecyclerView.Adapter<Infin
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-//        public final TextView mAltTextView;
         public final ImageView mPhotoImageView;
         public Photo mPhoto;
 
@@ -82,8 +78,6 @@ public class InfinitePhotoRecyclerViewAdapter extends RecyclerView.Adapter<Infin
             super(view);
             mView = view;
             mPhotoImageView = (ImageView) mView;
-//            mAltTextView = view.findViewById(R.id.altTextView);
-//            mPhotoImageView = view.findViewById(R.id.photoImageView);
         }
     }
 }

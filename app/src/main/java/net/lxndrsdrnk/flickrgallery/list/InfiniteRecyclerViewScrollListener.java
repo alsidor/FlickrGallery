@@ -19,9 +19,10 @@ public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.On
 
     private GridLayoutManager mLayoutManager;
 
-    public InfiniteRecyclerViewScrollListener(GridLayoutManager layoutManager) {
+    public InfiniteRecyclerViewScrollListener(GridLayoutManager layoutManager, int pageSize) {
         this.mLayoutManager = layoutManager;
         this.mItemsThreshold = mLinesThreshold * layoutManager.getSpanCount();
+        this.mPageSize = pageSize;
     }
 
     @Override

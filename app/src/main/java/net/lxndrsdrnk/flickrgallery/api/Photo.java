@@ -19,4 +19,9 @@ public class Photo {
     public Integer height_s;
     public Integer width_s;
 
+    public String getPhotoPageUrl(){
+        return new StringBuilder("https://www.flickr.com/photos/")
+                .append(owner).append('/').append(id).toString();
+    }
+
 }

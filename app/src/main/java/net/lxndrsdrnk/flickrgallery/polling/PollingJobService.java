@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
@@ -50,7 +51,7 @@ public class PollingJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters job) {
 
-        final String searchValue = "Moovit";//sharedPreferences.getString(SettingsKeys.CURRENT_SEARCH_VALUE, null);
+        final String searchValue = sharedPreferences.getString(SettingsKeys.CURRENT_SEARCH_VALUE, null);
         if (!TextUtils.isEmpty(searchValue)) {
 
             flickrAPI.search(searchValue, 1, 1).enqueue(new Callback<FlickrResponse>() {
@@ -92,6 +93,8 @@ public class PollingJobService extends JobService {
     public void postNotification() {
 
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra(MainActivity.EXTRA_REFRESH_DATA, true);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), NotificationCompat.CATEGORY_SOCIAL)
@@ -99,6 +102,9 @@ public class PollingJobService extends JobService {
                 .setContentTitle("New Flickr Pictures")
                 .setContentText("You have new pictures in Flickr client")
                 .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .build();
 
         NotificationManagerCompat.from(getApplicationContext()).notify(0, notification);
