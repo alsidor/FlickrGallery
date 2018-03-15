@@ -57,7 +57,6 @@ public class PhotosFragment extends Fragment {
     @BindView(R.id.noDataText)
     View mNoDataView;
 
-
     @Inject
     FlickrAPI flickrAPI;
 
@@ -105,6 +104,11 @@ public class PhotosFragment extends Fragment {
             @Override
             void requestData(int pageNum, int pageSize) {
                 loadData(pageNum, pageSize);
+            }
+
+            @Override
+            void onDataHunger() {
+                mProgressBar.setVisibility(View.VISIBLE);
             }
         };
 

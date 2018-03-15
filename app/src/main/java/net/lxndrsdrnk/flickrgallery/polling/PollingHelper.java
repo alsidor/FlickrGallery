@@ -38,7 +38,7 @@ public class PollingHelper {
                 .setTag(PollingJobService.TAG)
                 .setRecurring(true)
                 .setLifetime(Lifetime.FOREVER)
-                .setTrigger(Trigger.executionWindow(10, 20))
+                .setTrigger(Trigger.executionWindow(30, 60))
                 .setConstraints(Constraint.ON_UNMETERED_NETWORK)
                 .setReplaceCurrent(true)
                 .build();

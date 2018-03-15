@@ -32,11 +32,17 @@ public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.On
         int totalItemCount = mLayoutManager.getItemCount();
         int lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
 
+        System.out.println("LALA"+totalItemCount+":"+lastVisibleItem);
+
         if( mHaveMoreData && !isPendingData && (lastVisibleItem + mItemsThreshold >= totalItemCount) ){
             int nextPageNum = (totalItemCount / mPageSize) + 1;
 
             requestData(nextPageNum, mPageSize);
             isPendingData = true;
+        }
+
+        if( mHaveMoreData && totalItemCount == lastVisibleItem + 1){
+            onDataHunger();
         }
     }
 
@@ -49,5 +55,7 @@ public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.On
     }
 
     abstract void requestData(int pageNum, int pageSize);
+
+    abstract void onDataHunger();
 
 }
