@@ -11,6 +11,7 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
+import net.lxndrsdrnk.flickrgallery.R;
 import net.lxndrsdrnk.flickrgallery.SettingsKeys;
 
 /**
@@ -44,7 +45,7 @@ public class PollingHelper {
 
         dispatcher.mustSchedule(myJob);
 
-        Toast.makeText(context, "Polling started", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, R.string.polling_started, Toast.LENGTH_SHORT).show();
 
         sharedPreferences.edit().putBoolean(SettingsKeys.POLLING_ENABLED, true).commit();
     }
@@ -56,7 +57,7 @@ public class PollingHelper {
         dispatcher.cancel(PollingJobService.TAG);
 
         if(isPollingEnabled()){
-            Toast.makeText(context, "Polling stopped", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.polling_stopped, Toast.LENGTH_SHORT).show();
         }
 
         sharedPreferences.edit().putBoolean(SettingsKeys.POLLING_ENABLED, false).commit();

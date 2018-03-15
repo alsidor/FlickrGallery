@@ -19,8 +19,6 @@ import net.lxndrsdrnk.flickrgallery.SettingsKeys;
 import net.lxndrsdrnk.flickrgallery.api.FlickrAPI;
 import net.lxndrsdrnk.flickrgallery.api.FlickrResponse;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import retrofit2.Call;
@@ -98,9 +96,9 @@ public class PollingJobService extends JobService {
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), NotificationCompat.CATEGORY_SOCIAL)
-                .setSmallIcon(R.drawable.ic_search_black_24dp)
-                .setContentTitle("New Flickr Pictures")
-                .setContentText("You have new pictures in Flickr client")
+                .setSmallIcon(R.drawable.ic_notification_icon_24dp)
+                .setContentTitle(getString(R.string.new_flickr_pictures))
+                .setContentText(getString(R.string.new_pictures_description))
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)

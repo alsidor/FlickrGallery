@@ -1,16 +1,14 @@
 package net.lxndrsdrnk.flickrgallery;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.SearchView;
 
 import net.lxndrsdrnk.flickrgallery.api.Photo;
 import net.lxndrsdrnk.flickrgallery.list.PhotosFragment;
@@ -37,6 +35,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         pollingHelper = new PollingHelper(this, sharedPreferences);
 
         setContentView(R.layout.activity_main);
+
+
+
+        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                boolean hasBack = getSupportFragmentManager().getBackStackEntryCount() >= 1;
+                getSupportActionBar().setDisplayHomeAsUpEnabled(hasBack);
+                getSupportActionBar().setDisplayShowHomeEnabled(hasBack);
+            }
+        });
 
         if(null == savedInstanceState) {
 
@@ -112,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 break;
             case R.id.menu_stop_polling:
                 pollingHelper.stopPolling();
+                break;
+            case android.R.id.home:
+                onBackPressed();
                 break;
         }
 

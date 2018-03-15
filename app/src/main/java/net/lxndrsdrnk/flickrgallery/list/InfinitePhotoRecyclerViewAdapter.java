@@ -37,8 +37,8 @@ public class InfinitePhotoRecyclerViewAdapter extends RecyclerView.Adapter<Infin
         holder.mPhoto = mValues.get(position);
 
         Picasso.get().load(holder.mPhoto.url_s)
-//                .error(R.drawable.placeholder)
-//                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.ic_broken_image_48dp)
+//                .placeholder(R.drawable.ic_loading_48dp)
                 .into(holder.mPhotoImageView);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

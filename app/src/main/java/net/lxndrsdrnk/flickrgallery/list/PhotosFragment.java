@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -136,7 +135,7 @@ public class PhotosFragment extends Fragment {
     }
 
 
-    protected void loadData(final int pageNum, int pageSize){
+    protected void loadData(final int pageNum, final int pageSize){
         if(pageNum == 1){
             mProgressBar.setVisibility(View.VISIBLE);
         }
@@ -147,6 +146,7 @@ public class PhotosFragment extends Fragment {
                 FlickrResponse flickrResponse = response.body();
                 mPhotosAdapter.appendValues(flickrResponse.photos.photo);
                 mInfinteScrollAdapter.notifyDataLoaded();
+                mInfinteScrollAdapter.setHaveMoreData(flickrResponse.photos.photo.size() == pageSize);
 
                 if(pageNum == 1 && !TextUtils.isEmpty(mSearchValue) && !flickrResponse.photos.photo.isEmpty()){
                     sharedPreferences.edit().putString(SettingsKeys.LAST_PHOTO_ID, flickrResponse.photos.photo.get(0).id).commit();

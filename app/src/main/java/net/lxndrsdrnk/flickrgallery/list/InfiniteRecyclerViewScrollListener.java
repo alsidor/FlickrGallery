@@ -16,6 +16,7 @@ public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.On
     private int mPageSize = 50;
 
     private boolean isPendingData = false;
+    private boolean mHaveMoreData = true;
 
     private GridLayoutManager mLayoutManager;
 
@@ -31,14 +32,16 @@ public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.On
         int totalItemCount = mLayoutManager.getItemCount();
         int lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
 
-        if( !isPendingData && (lastVisibleItem + mItemsThreshold >= totalItemCount) ){
+        if( mHaveMoreData && !isPendingData && (lastVisibleItem + mItemsThreshold >= totalItemCount) ){
             int nextPageNum = (totalItemCount / mPageSize) + 1;
 
-            if( totalItemCount % mPageSize == 0 ) {
-                requestData(nextPageNum, mPageSize);
-            }
+            requestData(nextPageNum, mPageSize);
             isPendingData = true;
         }
+    }
+
+    public void setHaveMoreData(boolean haveMoreData) {
+        this.mHaveMoreData = haveMoreData;
     }
 
     public void notifyDataLoaded(){
@@ -46,4 +49,5 @@ public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.On
     }
 
     abstract void requestData(int pageNum, int pageSize);
+
 }

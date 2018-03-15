@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">FlickrGallery</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Flickr Gallery</string>
+    <string name="polling_started">Polling started</string>
+    <string name="polling_stopped">Polling stopped</string>
+    <string name="new_flickr_pictures">New Flickr Pictures</string>
+    <string name="new_pictures_description">You have new pictures in Flickr client</string>
+    <string name="nothing_found">Nothing found</string>
 </resources>
