@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,9 +40,12 @@ public class PhotosFragment extends Fragment {
     private int mColumnCount = 3;
     private OnListFragmentInteractionListener mListener;
 
+    private String mSearchValue;
+
     @BindView(R.id.photosList)
     RecyclerView mPhotosRecyclerView;
     InfinitePhotoRecyclerViewAdapter mPhotosAdapter;
+    InfiniteRecyclerViewScrollListener mInfinteScrollAdapter;
 
 
     @Inject
@@ -79,16 +83,20 @@ public class PhotosFragment extends Fragment {
         mPhotosAdapter = new InfinitePhotoRecyclerViewAdapter(new ArrayList<Photo>(), mListener);
 
         GridLayoutManager layoutManager = new CustomGridLayoutManager(view.getContext(), mColumnCount);
+
         mPhotosRecyclerView.setLayoutManager(layoutManager);
         mPhotosRecyclerView.setAdapter(mPhotosAdapter);
-        mPhotosRecyclerView.addOnScrollListener(new InfiniteRecyclerViewScrollListener(layoutManager){
+
+        mInfinteScrollAdapter = new InfiniteRecyclerViewScrollListener(layoutManager){
 
             @Override
             void requestData(int pageNum, int pageSize) {
                 Log.d("SCROLL", "Request pageNum="+pageNum+" pageSize="+pageSize);
                 loadData(pageNum, pageSize);
             }
-        });
+        };
+
+        mPhotosRecyclerView.addOnScrollListener(mInfinteScrollAdapter);
 
         return view;
     }
@@ -99,18 +107,35 @@ public class PhotosFragment extends Fragment {
         loadData(1, 50);
     }
 
+    public void setSearchValue(String searchValue){
+        this.mSearchValue = searchValue;
+
+        mPhotosAdapter.reset();
+
+        loadData(1, 50);
+    }
+
     protected void loadData(int pageNum, int pageSize){
-        flickrAPI.getRecent(pageNum, pageSize).enqueue(new Callback<FlickrResponse>() {
+
+        final Callback<FlickrResponse> callback = new Callback<FlickrResponse>() {
             @Override
             public void onResponse(Call<FlickrResponse> call, Response<FlickrResponse> response) {
                 mPhotosAdapter.appendValues(response.body().photos.photo);
+                mInfinteScrollAdapter.notifyDataLoaded();
             }
 
             @Override
             public void onFailure(Call<FlickrResponse> call, Throwable t) {
-
+                mInfinteScrollAdapter.notifyDataLoaded();
             }
-        });
+        };
+
+
+        if( TextUtils.isEmpty(mSearchValue) ) {
+            flickrAPI.getRecent(pageNum, pageSize).enqueue(callback);
+        } else {
+            flickrAPI.search(mSearchValue, pageNum, pageSize).enqueue(callback);
+        }
     }
 
 

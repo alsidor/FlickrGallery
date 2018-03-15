@@ -40,7 +40,7 @@ public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.On
         }
     }
 
-    public void notifyDataChanged(){
+    public void notifyDataLoaded(){
         isPendingData = false;
     }
 

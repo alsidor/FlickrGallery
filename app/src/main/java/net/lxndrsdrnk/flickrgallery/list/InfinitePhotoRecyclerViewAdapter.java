@@ -60,6 +60,11 @@ public class InfinitePhotoRecyclerViewAdapter extends RecyclerView.Adapter<Infin
         notifyItemRangeChanged(positionStart, newValues.size());
     }
 
+    public void reset(){
+        mValues.clear();
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return mValues.size();
