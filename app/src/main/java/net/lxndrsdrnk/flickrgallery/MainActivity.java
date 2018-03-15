@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         final boolean isPollingEnabled = pollingHelper.isPollingEnabled();
-        menu.findItem(R.id.menu_start_poling).setVisible(!isPollingEnabled);
+        menu.findItem(R.id.menu_start_poling).setVisible(!isPollingEnabled && hasSearchValue);
         menu.findItem(R.id.menu_stop_polling).setVisible(isPollingEnabled);
 
 
