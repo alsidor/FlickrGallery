@@ -52,6 +52,12 @@ public class PhotosFragment extends Fragment {
     InfinitePhotoRecyclerViewAdapter mPhotosAdapter;
     InfiniteRecyclerViewScrollListener mInfinteScrollAdapter;
 
+    @BindView(R.id.progressBar)
+    View mProgressBar;
+
+    @BindView(R.id.noDataText)
+    View mNoDataView;
+
 
     @Inject
     FlickrAPI flickrAPI;
@@ -131,6 +137,9 @@ public class PhotosFragment extends Fragment {
 
 
     protected void loadData(final int pageNum, int pageSize){
+        if(pageNum == 1){
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
 
         final Callback<FlickrResponse> callback = new Callback<FlickrResponse>() {
             @Override
@@ -142,6 +151,9 @@ public class PhotosFragment extends Fragment {
                 if(pageNum == 1 && !TextUtils.isEmpty(mSearchValue) && !flickrResponse.photos.photo.isEmpty()){
                     sharedPreferences.edit().putString(SettingsKeys.LAST_PHOTO_ID, flickrResponse.photos.photo.get(0).id).commit();
                 }
+
+                mNoDataView.setVisibility(mPhotosAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override

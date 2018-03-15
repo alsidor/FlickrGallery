@@ -11,4 +11,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/photo_list_item" />
+
+    <TextView
+        android:id="@+id/noDataText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="Nothing found"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:background="@drawable/progress_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:visibility="gone"
+        android:indeterminate="true" />
+
 </FrameLayout>
