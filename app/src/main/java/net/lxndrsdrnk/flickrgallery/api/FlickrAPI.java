@@ -5,6 +5,8 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 /**
+ * Retrofit based FlickrAPI
+ *
  * Created by alsidor on 14/03/2018.
  */
 

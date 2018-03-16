@@ -5,4 +5,5 @@
     <string name="new_flickr_pictures">New Flickr Pictures</string>
     <string name="new_pictures_description">You have new pictures in Flickr client</string>
     <string name="nothing_found">Nothing found</string>
+    <string name="network_error">Error during data loading</string>
 </resources>

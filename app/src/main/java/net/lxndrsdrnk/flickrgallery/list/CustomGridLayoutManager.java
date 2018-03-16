@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 /**
+ * Grid with always rectangular items.
  * Created by alsidor on 15/03/2018.
  */
 

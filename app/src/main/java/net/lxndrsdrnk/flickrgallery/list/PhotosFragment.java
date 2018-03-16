@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import net.lxndrsdrnk.flickrgallery.FGApplication;
 import net.lxndrsdrnk.flickrgallery.R;
@@ -48,7 +49,7 @@ public class PhotosFragment extends Fragment {
 
     @BindView(R.id.photosList)
     RecyclerView mPhotosRecyclerView;
-    InfinitePhotoRecyclerViewAdapter mPhotosAdapter;
+    PhotoRecyclerViewAdapter mPhotosAdapter;
     InfiniteRecyclerViewScrollListener mInfinteScrollAdapter;
 
     @BindView(R.id.progressBar)
@@ -92,7 +93,7 @@ public class PhotosFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-        mPhotosAdapter = new InfinitePhotoRecyclerViewAdapter(new ArrayList<Photo>(), mListener);
+        mPhotosAdapter = new PhotoRecyclerViewAdapter(new ArrayList<Photo>(), mListener);
 
         GridLayoutManager layoutManager = new CustomGridLayoutManager(view.getContext(), mColumnCount);
 
@@ -141,6 +142,7 @@ public class PhotosFragment extends Fragment {
 
     protected void loadData(final int pageNum, final int pageSize){
         if(pageNum == 1){
+            // First request means empty screen. Let's show progress
             mProgressBar.setVisibility(View.VISIBLE);
         }
 
@@ -150,19 +152,26 @@ public class PhotosFragment extends Fragment {
                 FlickrResponse flickrResponse = response.body();
                 mPhotosAdapter.appendValues(flickrResponse.photos.photo);
                 mInfinteScrollAdapter.notifyDataLoaded();
+
+                // Flickr api do not return correct total and pages values
+                // So we check if we received the request number of items
                 mInfinteScrollAdapter.setHaveMoreData(flickrResponse.photos.photo.size() == pageSize);
 
                 if(pageNum == 1 && !TextUtils.isEmpty(mSearchValue) && !flickrResponse.photos.photo.isEmpty()){
                     sharedPreferences.edit().putString(SettingsKeys.LAST_PHOTO_ID, flickrResponse.photos.photo.get(0).id).commit();
                 }
 
+                // Nothing?
                 mNoDataView.setVisibility(mPhotosAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+
                 mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<FlickrResponse> call, Throwable t) {
                 mInfinteScrollAdapter.notifyDataLoaded();
+
+                Toast.makeText(getActivity(), R.string.network_error, Toast.LENGTH_SHORT).show();
             }
         };
 

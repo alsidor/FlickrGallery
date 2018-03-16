@@ -4,18 +4,28 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 /**
+ * Analyze RecyclerView and LayoutManger state and request new data in advance
  * Created by alsidor on 15/03/2018.
  */
 
 public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
 
+    /**
+     * Number of lines treshold to start loading next portion of data
+     */
     private int mLinesThreshold = 5;
     private int mItemsThreshold = mLinesThreshold;
 
     private int mPageSize = 50;
 
+    /**
+     * True when the data was requested
+     */
     private boolean isPendingData = false;
+    /**
+     * False when the end of endless data reached
+     */
     private boolean mHaveMoreData = true;
 
     private GridLayoutManager mLayoutManager;
@@ -32,9 +42,9 @@ public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.On
         int totalItemCount = mLayoutManager.getItemCount();
         int lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
 
-        System.out.println("LALA"+totalItemCount+":"+lastVisibleItem);
-
         if( mHaveMoreData && !isPendingData && (lastVisibleItem + mItemsThreshold >= totalItemCount) ){
+            //We are close to bottom, time to load next portion
+
             int nextPageNum = (totalItemCount / mPageSize) + 1;
 
             requestData(nextPageNum, mPageSize);
@@ -42,6 +52,7 @@ public abstract class InfiniteRecyclerViewScrollListener extends RecyclerView.On
         }
 
         if( mHaveMoreData && totalItemCount == lastVisibleItem + 1){
+            //We are at the bottom, but data didn't arrived yet
             onDataHunger();
         }
     }

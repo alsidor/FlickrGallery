@@ -8,9 +8,10 @@
     <TextView
         android:id="@+id/photoUrlText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:textAlignment="center"
         android:gravity="center"
+        android:layout_gravity="center"
         android:autoLink="web"
         android:focusable="true"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>

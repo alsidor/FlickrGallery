@@ -14,13 +14,17 @@ import net.lxndrsdrnk.flickrgallery.api.Photo;
 import java.util.List;
 
 
+/**
+ * Photos object adapter for recycler view.
+ * Created by alsidor on 14/03/2018.
+ */
 
-public class InfinitePhotoRecyclerViewAdapter extends RecyclerView.Adapter<InfinitePhotoRecyclerViewAdapter.ViewHolder> {
+public class PhotoRecyclerViewAdapter extends RecyclerView.Adapter<PhotoRecyclerViewAdapter.ViewHolder> {
 
     private final List<Photo> mValues;
     private final PhotosFragment.OnListFragmentInteractionListener mListener;
 
-    public InfinitePhotoRecyclerViewAdapter(List<Photo> items, PhotosFragment.OnListFragmentInteractionListener listener) {
+    public PhotoRecyclerViewAdapter(List<Photo> items, PhotosFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
